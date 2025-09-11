@@ -31,23 +31,30 @@ global cantidad_total_de_elementos_packed
 ;extern uint32_t cantidad_total_de_elementos(lista_t* lista);
 ;registros: lista[rdi]
 cantidad_total_de_elementos:
-	push RBP ;pila alineada
-  	mov RBP, RSP ;strack frame armado
+	XOR rax, rax ;cant de elementos
 
-	XOR eax, eax
 	.ciclo:
-    	mov rsi, [RDI + eax * 8 + 0 ]
+    	mov rsi, [RDI + rax * NODO_SIZE + NODO_OFFSET_NEXT]
+		add rax, NODO_SIZE 				;avanzo el índice del array
+		
+		xor r8d, r8d 
+    	CMP R8, RSI 
+    	jne .ciclo
 
-		INC eax ;avanzo el índice del array
-		xor r8d
-    	CMP R8, RSI
-    	JL .ciclo
-
-
-	ret
+	ret 
 
 ;extern uint32_t cantidad_total_de_elementos_packed(packed_lista_t* lista);
-;registros: lista[?]
+;registros: lista[rdi?]
 cantidad_total_de_elementos_packed:
+	XOR rax, rax ;cant de elementos
+
+	.ciclo:
+    	mov rsi, [RDI + rax * PACKED_NODO_SIZE + PACKED_NODO_OFFSET_NEXT]
+		add rax, PACKED_NODO_SIZE 				;avanzo el índice del array
+		
+		xor r8d, r8d 
+    	CMP R8, RSI 
+    	jne .ciclo
+
 	ret
 

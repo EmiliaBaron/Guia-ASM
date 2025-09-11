@@ -21,7 +21,7 @@ UINT32_SIZE EQU 8
 ; Marcar el ejercicio como hecho (`true`) o pendiente (`false`).
 
 global EJERCICIO_1_HECHO
-EJERCICIO_1_HECHO: db FALSE ; Cambiar por `TRUE` para correr los tests.
+EJERCICIO_1_HECHO: db TRUE ; Cambiar por `TRUE` para correr los tests.
 
 global EJERCICIO_2_HECHO
 EJERCICIO_2_HECHO: db FALSE ; Cambiar por `TRUE` para correr los tests.
