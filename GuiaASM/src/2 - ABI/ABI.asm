@@ -143,7 +143,9 @@ product_2_f:
  mov rbp, rsp
 
  ;convierto x1 a float
- cvtsi2ss XMM1, esi 
+ CVTPI2PS XMM1, esi    ; la instruccion solo toma reg64 bits, pero si uso esos puede que esten 
+                      ; sucios, y resetear todo el reg rsi a cero hace que pierda el valor x1
+                      ; que hagoooo
  ;multiplico floats
  mulss XMM0, XMM1
                   ;fmul XMM0, XMM1 -> instruccion no válida
@@ -207,7 +209,7 @@ product_9_f:
   MULSD XMM0, XMM7 ; -> resultado por f8
 
 	; convertimos los enteros en doubles y los multiplicamos por xmm0.
-	CVTSI2SD XMM1, esi 
+	CVTPI2PD XMM1, esi 
   MULSD XMM0, XMM1
   CVTSI2SD XMM1, edx
   MULSD XMM0, XMM1
