@@ -1,0 +1,28 @@
+contarCombustibleAsignado
+
+>>> p *(attackunit_t*) $rbx
+$3 = {
+  clase = "anti-air\000\000",
+  combustible = 60,
+  references = 1 '\001'
+}
+comb base = 60
+comb asign = 20
+
+hay que restar lo que tiene el mapa - lo asignado por la funcion y sumarlo
+
+uint16_t get_combustible(char* clase) {
+	// Referencia: https://awbw.fandom.com/wiki/Units
+    uint16_t res;
+    if (strcmp(clase, "anti-air") == 0) {
+        res = 60;
+    } else if (strcmp(clase, "artillery") == 0) {
+        res = 50;
+    } else if (strcmp(clase, "battleship") == 0) {
+        res = 99;
+    } else if (strcmp(clase, "mech") == 0) {
+        res = 70;
+    } else {
+		// No debería caer acá pero por las dudas
+		res = 20;
+	}

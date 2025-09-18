@@ -1,0 +1,22 @@
+b init_fantastruco_dir
+
+b ej4a.asm:
+
+>>> p *(fantastruco_t *) $rdi
+$1 = {
+  __dir = 0x0,
+  __dir_entries = 9999,
+  __archetype = 0x0,
+  face_up = true
+}
+
+>>> p *(fantastruco_t *) $r12
+$5 = {
+  __dir = 0x4052a0,
+  __dir_entries = 9999,
+  __archetype = 0x0,
+  face_up = true
+}
+
+ p ({char} ($rbp -40))@5
+ sleep

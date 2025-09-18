@@ -14,21 +14,21 @@ TRUE  EQU 1
 ; Funciones a implementar:
 ;   - es_indice_ordenado
 global EJERCICIO_1A_HECHO
-EJERCICIO_1A_HECHO: db FALSE ; Cambiar por `TRUE` para correr los tests.
+EJERCICIO_1A_HECHO: db TRUE ; Cambiar por `TRUE` para correr los tests.
 
 ; Marca el ejercicio 1B como hecho (`true`) o pendiente (`false`).
 ;
 ; Funciones a implementar:
 ;   - indice_a_inventario
 global EJERCICIO_1B_HECHO
-EJERCICIO_1B_HECHO: db FALSE ; Cambiar por `TRUE` para correr los tests.
+EJERCICIO_1B_HECHO: db TRUE ; Cambiar por `TRUE` para correr los tests.
 
 ;########### ESTOS SON LOS OFFSETS Y TAMAÑO DE LOS STRUCTS
 ; Completar las definiciones (serán revisadas por ABI enforcer):
-ITEM_NOMBRE EQU ??
-ITEM_FUERZA EQU ??
-ITEM_DURABILIDAD EQU ??
-ITEM_SIZE EQU ??
+ITEM_NOMBRE EQU 0
+ITEM_FUERZA EQU 20
+ITEM_DURABILIDAD EQU 24
+ITEM_SIZE EQU 28
 
 ;; La funcion debe verificar si una vista del inventario está correctamente 
 ;; ordenada de acuerdo a un criterio (comparador)
@@ -59,10 +59,68 @@ es_indice_ordenado:
 	; ubicación según la convención de llamada. Prestá atención a qué
 	; valores son de 64 bits y qué valores son de 32 bits o 8 bits.
 	;
-	; r/m64 = item_t**     inventario
-	; r/m64 = uint16_t*    indice
-	; r/m16 = uint16_t     tamanio
-	; r/m64 = comparador_t comparador
+	; rdi = item_t**     inventario
+	; rsi = uint16_t*    indice
+	; rdx = uint16_t     tamanio
+	; rcx = comparador_t comparador
+
+	push rbp ;alin
+	mov rbp, rsp
+	push r12 ;
+	push r13 ; alin
+	push r14
+	push r15 ; alin
+	push rbx
+	sub rsp, 8 ; alin
+
+	;preservamos 
+	mov r12, rdi ;invent
+	mov r13, rsi ;indice
+	mov r14, rdx ;tamanio
+	mov r15, rcx ;comp
+
+	xor rbx, rbx ; i
+	sub r14, 2 ; le resto uno al tamaño
+	cmp r14, 1
+	jle devuelveTrue
+
+	recorrerIndices:  
+		cmp rbx, r14
+		je devuelveTrue
+
+		xor rcx, rcx ; un indice
+		mov cx, WORD [r13 + rbx * 2] ; un indice
+		mov rdi, QWORD [r12 + rcx *8] ; item1
+
+		mov cx, WORD [r13 + (rbx + 1)* 2] ; un indice
+		mov rsi, QWORD [r12 + rcx *8 ] ; item2
+
+		call r15 
+
+		cmp rax, 0
+		je devuelveFalse
+
+		inc rbx
+		jmp recorrerIndices		
+
+	devuelveTrue: 
+		mov rax, 1
+		jmp epilogo1
+
+	devuelveFalse:
+		mov rax, 0
+		jmp epilogo1
+
+	;epilogo
+	epilogo1: 
+		add rsp, 8
+		pop rbx
+		pop r15
+		pop r14
+		pop r13
+		pop r12
+		pop rbp
+
 		ret
 
 ;; Dado un inventario y una vista, crear un nuevo inventario que mantenga el
@@ -91,7 +149,47 @@ indice_a_inventario:
 	; ubicación según la convención de llamada. Prestá atención a qué
 	; valores son de 64 bits y qué valores son de 32 bits o 8 bits.
 	;
-	; r/m64 = item_t**  inventario
-	; r/m64 = uint16_t* indice
-	; r/m16 = uint16_t  tamanio
+	; rdi = item_t**  inventario
+	; rsi = uint16_t* indice
+	; rdx = uint16_t  tamanio
+
+	push rbp 
+	mov rbp, rsp
+	push r12
+	push r13
+	push r14
+	sub rsp, 8
+
+	;movemos los parametros a no vol
+	mov r12, rdi ; inven
+	mov r13, rsi ; indice
+	mov r14, rdx ; tamanio
+
+	mov rax, rdx ; operaciones con mul: primer op en rax 
+	mov r8, 8
+	mul r8
+	mov rdi, rax
+	call malloc ;malloc con tamaño resultado 
+	;no modificar el rax 
+	
+	xor r8, r8
+	recorrerIndice:
+		cmp r8, r14
+		je epilogo2
+
+		xor r9,r9
+		mov r9w, WORD [r13 + r8 * 2] ;puntero al indice
+
+		mov r10, QWORD [r12 + r9 *8 ] ; item
+		mov QWORD [rax + r8 *8], r10 ; item en inventario
+		inc r8
+		jmp recorrerIndice
+
+	epilogo2: 
+
+		add rsp, 8
+		pop r14
+		pop r13
+		pop r12
+		pop rbp
 	ret

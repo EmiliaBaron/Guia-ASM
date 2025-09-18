@@ -42,10 +42,10 @@ en ensamblador algunas funciones del sistema de manipulación de inventarios.
 La estructura utilizada para representar ítems es la siguiente:
 ```c
 typedef struct {
-    char nombre[18];
-    uint32_t fuerza;
-    uint16_t durabilidad;
-} item_t;
+    char nombre[18];        // 18 => 0
+    uint32_t fuerza;		// 4 => 20
+    uint16_t durabilidad;	// 2 => 24
+} item_t;					// 28
 ```
 
 El inventario se implementa como un array de punteros a ítems. Nuevos ítems
@@ -199,10 +199,10 @@ El equipo de IT del banco nos brinda las siguientes estructuras:
 
 ```
 typedef struct {
-	char[3] categoria;
-	uint16_t estado;
-	usuario_t* usuario;
-} caso_t;
+	char[3] categoria; 		// 3 => 0
+	uint16_t estado;		// 2 => 4
+	usuario_t* usuario;		// 8 => 8
+} caso_t;			//16
 ```
 
 Esta estructura representa un caso. Contiene:
@@ -218,9 +218,9 @@ Esta estructura representa un caso. Contiene:
 
 ```
 typedef struct {
-	uint32_t id;
-	uint32_t nivel;
-} usuario_t;
+	uint32_t id; 	// 4 => 0
+	uint32_t nivel; // 4 => 4
+} usuario_t;		// 8
 ```
 
 Donde:
@@ -244,10 +244,10 @@ Donde:
 
 ```
 typedef struct {
-	caso_t* casos_nivel_0;
-	caso_t* casos_nivel_1;
-	caso_t* casos_nivel_2;
-} segmentacion_t;
+	caso_t* casos_nivel_0;  // 8 => 0
+	caso_t* casos_nivel_1;  // 8 => 8
+	caso_t* casos_nivel_2;  // 8 => 16
+} segmentacion_t;          //24
 ```
 Que dada una lista de casos, los ordene de acuerdo al nivel de prioridad del usuario que lo abrió. El parametro `largo` indica la longitud del arreglo pasado por parametro. La estructura retornada no debe utilizar más memoria de la necesaria.
 
@@ -302,14 +302,14 @@ Donde:
 
 ```
 typedef struct {
-	uint8_t cantidad_CLT;
-	uint8_t cantidad_RBO;
-	uint8_t cantidad_KSC;
-	uint8_t cantidad_KDT;
-	uint8_t cantidad_estado_0;
-	uint8_t cantidad_estado_1;
-	uint8_t cantidad_estado_2;
-} estadisticas_t; 
+	uint8_t cantidad_CLT; 		// 1 => 0
+	uint8_t cantidad_RBO;		// 1 => 1
+	uint8_t cantidad_KSC;		// 1 => 2
+	uint8_t cantidad_KDT;		// 1 => 3
+	uint8_t cantidad_estado_0;	// 1 => 4
+	uint8_t cantidad_estado_1;	// 1 => 5
+	uint8_t cantidad_estado_2;	// 1 => 6
+} estadisticas_t; // 6
 
 ```
 

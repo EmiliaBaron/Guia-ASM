@@ -10,13 +10,14 @@
  *   - combustible:    La cantidad de combustible disponible de la unidad.
  *   - references:     La cantidad de referencias a la unidad en el mapa.
  */
-typedef struct {
-	char clase[11];       //asmdef_offset:ATTACKUNIT_CLASE
-	uint16_t combustible; //asmdef_offset:ATTACKUNIT_COMBUSTIBLE
-	uint8_t references;   //asmdef_offset:ATTACKUNIT_REFERENCES
-} attackunit_t; //asmdef_size:ATTACKUNIT_SIZE
+typedef struct
+{
+	char clase[11];		  // 11 => 0		asmdef_offset:ATTACKUNIT_CLASE
+	uint16_t combustible; // 2 => 12		asmdef_offset:ATTACKUNIT_COMBUSTIBLE
+	uint8_t references;	  // 1 => 14	asmdef_offset:ATTACKUNIT_REFERENCES
+} attackunit_t;			  // 16     	asmdef_size:ATTACKUNIT_SIZE
 
-typedef attackunit_t *mapa_t[255][255];
+typedef attackunit_t *mapa_t[255][255]; // 65025
 
 /**
  * Marca el ejercicio 1A como hecho (`true`) o pendiente (`false`).
@@ -45,14 +46,14 @@ extern bool EJERCICIO_2C_HECHO;
 /**
  * OPCIONAL: implementar en C
  */
-void optimizar(mapa_t mapa, attackunit_t* compartida, uint32_t (*fun_hash)(attackunit_t*));
+void optimizar(mapa_t mapa, attackunit_t *compartida, uint32_t (*fun_hash)(attackunit_t *));
 
 /**
  * OPCIONAL: implementar en C
  */
-uint32_t contarCombustibleAsignado(mapa_t mapa, uint16_t (*fun_combustible)(char*));
+uint32_t contarCombustibleAsignado(mapa_t mapa, uint16_t (*fun_combustible)(char *));
 
 /**
  * OPCIONAL: implementar en C
  */
-void modificarUnidad(mapa_t mapa, uint8_t x, uint8_t y, void (*modificar_t)(attackunit_t*));
+void modificarUnidad(mapa_t mapa, uint8_t x, uint8_t y, void (*modificar_t)(attackunit_t *));

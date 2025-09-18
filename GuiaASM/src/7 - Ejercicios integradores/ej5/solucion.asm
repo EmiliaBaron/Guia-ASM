@@ -1,3 +1,5 @@
+extern strcmp
+
 ; Definiciones comunes
 TRUE  EQU 1
 FALSE EQU 0
@@ -20,21 +22,21 @@ extern strcmp
 
 ;########### ESTOS SON LOS OFFSETS Y TAMAÑO DE LOS STRUCTS
 ; Completar las definiciones (serán revisadas por ABI enforcer):
-carta.en_juego EQU NO_COMPLETADO
-carta.nombre   EQU NO_COMPLETADO
-carta.vida     EQU NO_COMPLETADO
-carta.jugador  EQU NO_COMPLETADO
-carta.SIZE     EQU NO_COMPLETADO
+carta.en_juego EQU 0
+carta.nombre   EQU 1
+carta.vida     EQU 14
+carta.jugador  EQU 16
+carta.SIZE     EQU 18
 
-tablero.mano_jugador_rojo EQU NO_COMPLETADO
-tablero.mano_jugador_azul EQU NO_COMPLETADO
-tablero.campo             EQU NO_COMPLETADO
-tablero.SIZE              EQU NO_COMPLETADO
+tablero.mano_jugador_rojo EQU 0
+tablero.mano_jugador_azul EQU 8
+tablero.campo             EQU 16
+tablero.SIZE              EQU ((50 +2)*8)
 
-accion.invocar   EQU NO_COMPLETADO
-accion.destino   EQU NO_COMPLETADO
-accion.siguiente EQU NO_COMPLETADO
-accion.SIZE      EQU NO_COMPLETADO
+accion.invocar   EQU 0
+accion.destino   EQU 8
+accion.siguiente EQU 16
+accion.SIZE      EQU 24
 
 ; Variables globales de sólo lectura
 section .rodata
@@ -44,21 +46,21 @@ section .rodata
 ; Funciones a implementar:
 ;   - hay_accion_que_toque
 global EJERCICIO_1_HECHO
-EJERCICIO_1_HECHO: db FALSE
+EJERCICIO_1_HECHO: db TRUE
 
 ; Marca el ejercicio 2 como hecho (`true`) o pendiente (`false`).
 ;
 ; Funciones a implementar:
 ;   - invocar_acciones
 global EJERCICIO_2_HECHO
-EJERCICIO_2_HECHO: db FALSE
+EJERCICIO_2_HECHO: db TRUE
 
 ; Marca el ejercicio 3 como hecho (`true`) o pendiente (`false`).
 ;
 ; Funciones a implementar:
 ;   - contar_cartas
 global EJERCICIO_3_HECHO
-EJERCICIO_3_HECHO: db FALSE
+EJERCICIO_3_HECHO: db TRUE
 
 section .text
 
@@ -80,9 +82,55 @@ hay_accion_que_toque:
 	; ubicación según la convención de llamada. Prestá atención a qué
 	; valores son de 64 bits y qué valores son de 32 bits o 8 bits.
 	;
-	; r/m64 = accion_t*  accion
-	; r/m64 = char*      nombre
-	xor rax, rax
+	; rdi = accion_t*  accion
+	; rsi = char*      nombre
+	push rbp 
+	mov rbp, rsp
+	push r12
+	push r13 ; alin
+
+	;preservamos
+	mov r12, rdi ; accion
+	mov r13, rsi ; nombre
+	
+	recorrerAcciones: 
+		;ver si accion no es null 
+		cmp r12, 0 
+		je devolverCero
+
+		;acceder a la carta destino
+		mov r8, QWORD [r12 + accion.destino] ; puntero carta destino
+		;preparar strcmp
+		;acceder a su nombre
+		mov rdi, r8 
+		add rdi, carta.nombre
+
+		mov rsi, r13 ; asegurarse nombre
+
+		call strcmp
+
+		cmp rax, 0 ; si son iguales
+		je devolverUno
+
+		; si no son iguales
+		;acceder a siguiente accion
+		mov r9, QWORD [r12 + accion.siguiente]
+		mov r12, r9 ; puntero nueva accion
+		jmp recorrerAcciones
+
+
+	devolverCero: 
+		mov rax, 0 
+		jmp epilogoA 
+
+	devolverUno:
+		mov rax, 1
+
+	epilogoA: 
+
+	pop r13
+	pop r12
+	pop rbp
 	ret
 
 ; Invoca las acciones que fueron encoladas en la secuencia proporcionada en el
@@ -114,8 +162,62 @@ invocar_acciones:
 	; ubicación según la convención de llamada. Prestá atención a qué
 	; valores son de 64 bits y qué valores son de 32 bits o 8 bits.
 	;
-	; r/m64 = accion_t*  accion
-	; r/m64 = tablero_t* tablero
+	; rdi = accion_t*  accion
+	; rsi = tablero_t* tablero
+	push rbp 
+	mov rbp, rsp
+	push r12
+	push r13 ;alin 
+	push r14 
+	sub rsp, 8 
+
+	;preservar
+	mov r12, rdi ; accion 
+	mov r13, rsi ; tablero
+
+	recorrerSecuencia: 
+		cmp r12, 0  ; si accion null
+		je terminarSecuencia
+
+		;acceder a carta destino 
+		mov r14, QWORD [r12 + accion.destino] ; puntero carta destino
+		;acceder a en juego
+		mov r9b , BYTE [r14 + carta.en_juego] ; en juego 
+
+		cmp r9b, 0 
+		je siguienteAccion
+
+		; si esta en juego
+		; preparase para invocar accion
+		mov r10, QWORD [ r12 + accion.invocar]
+		mov rdi, r13
+		mov rsi, r14 ; carta destino
+
+		call r10 
+
+		;acceder vida carta destino
+		mov r11w, WORD [r14 + carta.vida]
+
+		cmp r11w, 0
+		jg siguienteAccion 
+
+		;si tiene 0 o menos de vida
+		;acceder a en juego
+		mov BYTE [r14 + carta.en_juego], 0
+		
+		siguienteAccion: 
+			mov r8, QWORD [r12 + accion.siguiente] 
+			mov r12 ,r8 ; puntero a siguiente accion
+			jmp recorrerSecuencia
+
+
+	terminarSecuencia: 
+
+	add rsp, 8
+	pop r14
+	pop r13
+	pop r12
+	pop rbp 
 	ret
 
 ; Cuenta la cantidad de cartas rojas y azules en el tablero.
@@ -143,7 +245,59 @@ contar_cartas:
 	; ubicación según la convención de llamada. Prestá atención a qué
 	; valores son de 64 bits y qué valores son de 32 bits o 8 bits.
 	;
-	; r/m64 = tablero_t* tablero
-	; r/m64 = uint32_t*  cant_rojas
-	; r/m64 = uint32_t*  cant_azules
+	; rdi = tablero_t* tablero
+	; rsi = uint32_t*  cant_rojas
+	; rdx = uint32_t*  cant_azules
+	push rbp 
+	mov rbp, rsp 
+	push r12
+	sub rsp, 8
+	
+
+	;acceder al campo 
+	mov rcx, rdi 
+	add rcx, tablero.campo
+
+	;asignar cero a contadores
+	mov DWORD [rsi], 0
+	mov DWORD [rdx], 0
+	
+	xor r8, r8 ; indice
+
+	recorrerTablero: 
+		cmp r8, 10*5
+		je terminarTablero
+
+		mov r12, QWORD [rcx + r8 * 8] ; puntero a carta
+
+		cmp r12, 0 
+		je incrementarIndiceT
+
+		;acceder a jugador dueño 
+		mov r10b, BYTE [r12 + carta.jugador]
+
+		cmp r10b, 1
+		je incrementarRojo 
+
+		cmp r10b, 2
+		je incrementarAzul 
+
+		jmp incrementarIndiceT
+
+		incrementarRojo:
+			inc DWORD [rsi]
+			jmp incrementarIndiceT
+
+		incrementarAzul: 
+			inc DWORD [rdx]
+		
+		incrementarIndiceT:
+			inc r8 
+			jmp recorrerTablero
+
+		terminarTablero:
+
+	add rsp, 8
+	pop r12
+	pop rbp 
 	ret

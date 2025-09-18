@@ -1,0 +1,37 @@
+    mov r12, rdi ; arreglo
+    mov r13, rsi ; largo
+
+    xor r14, r14 ;contador 0
+    xor r15, r15 ; cont 1
+    xor rbx, rbx ; cont 2
+
+    xor r8, r8 ; indice arreglo
+    
+    r9 usuario
+    r10d nivel usuario
+    
+    
+   
+ r14 -> puntero array 0
+    
+  r15 -> puntero array 1
+          
+ rbx -> puntero array 2
+ 
+     xor r8, 8 ;indice array
+    xor r9, r9 ;contador 0
+    xor r10, r10 ; cont 1
+    xor r11, r11 ; cont 2
+    
+    rdi -> usuario
+    esi -> nivel usuario
+    
+        push r8 ; rbp - 56
+        push r9 ; rbp - 64
+        push r10 ; rbp - 72
+        push r11 ; rbp - 80
+        
+        copiarCasos: 
+        
+; rdi = puntero incio caso a copiar
+; rsi = puntero arr casos por nivelp 

@@ -198,6 +198,8 @@ alternate_sum_4_using_c_alternative:
 
   push RDX  ;preservo x3 en la pila, desalineandola  ->> ojo que guarda el reg parametro en su 
             ;                                        ->> version 64b (aunque sea 32)
+
+            ; se puede hacer sin agregar padding 
   sub RSP, 8 ;alineo
   call restar_c 
   add RSP, 8 ;restauro tope

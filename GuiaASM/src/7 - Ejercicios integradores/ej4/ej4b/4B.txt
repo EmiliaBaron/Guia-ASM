@@ -1,0 +1,5 @@
+	mov r12, rdi ; card
+	mov r13, rsi ; habilidad
+	mov r14,  ; puntero directorio indice
+	
+	add r15, r12 ; r15 puntero al final del directorio

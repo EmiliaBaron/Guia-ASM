@@ -1,0 +1,36 @@
+segmentar_casos
+b ej3a.asm:
+r13 = 96 ( 6 largo)
+
+>>> p *(usuario_t*) $r9
+$2 = {
+  id = 1,
+  nivel = 0
+}
+>>> p (int) $r10d
+$3 = 0
+
+p *(usuario_t*) $r9
+$4 = {
+  id = 2,
+  nivel = 1
+}
+
+r14 = 2 - 0x407770
+r15 = 2 -  0x4077a0
+rbx = 2 -  0x4077d0
+
+p *(caso_t*) $rdi
+$1 = {
+  categoria = "A1",
+  estado = 1,
+  usuario = 0x4076b0
+}
+
+p *(caso_t*) $rdi
+$25 = {
+  categoria = "A4",
+  estado = 4,
+  usuario = 0x407710
+}
+

@@ -1,0 +1,75 @@
+EJ 5 
+
+#define ANCHO_CAMPO 10
+#define ALTO_CAMPO 5
+
+typedef struct carta {
+	bool en_juego; // 1 => 0
+	char nombre[12]; // 12 => 1
+	uint16_t vida;		// 2 => 14
+	uint8_t jugador;	// 1 => 16
+} carta_t;	// 18
+
+#define JUGADOR_ROJO 1
+#define JUGADOR_AZUL 2
+
+typedef struct tablero {
+	carta_t* mano_jugador_rojo; // 8 => 0
+	carta_t* mano_jugador_azul; // 8 => 8
+	carta_t* campo[ALTO_CAMPO][ANCHO_CAMPO]; // 8 =>16
+} tablero_t; 24
+
+typedef void accion_fn_t(tablero_t* tablero, carta_t* carta);
+
+typedef struct accion {
+	accion_fn_t* invocar;  //
+	carta_t* destino;
+	struct accion* siguiente;
+} accion_t;
+
+EJA
+bool hay_accion_que_toque(accion_t* accion, char* nombre);
+
+recorrer las acciones 
+- acceder a la carta destino
+ -acceder a su char y compararlo con el char pasado
+ - si es igual, devolver 1
+ 
+ - si al pasar a la siguiente accion da null, devolver cero
+
+
+EJB 
+void invocar_acciones(accion_t* accion, tablero_t* tablero);
+
+void mi_accion(tablero_t* tablero, carta_t* carta);
+
+chequear si la carta destino está en juego
+si despues aplicada la accion tiene 0 puntos de vida
+pasa a no estar en juego
+
+recorrer las acciones 
+	- si es null, terminar
+	- si no , acceder a la carta destino y fijarse si esta en jueg
+	- si esta en juego, invocar la accion accediendo al puntero
+	chequear puntos de vida de la carta destino
+	- si >0, no hacer nada
+	- si < 0 acceder a en juego y cambiar a false
+	
+	
+	- si no está en juego, pasar a la siguiente accion/ cortar acciones? 
+	
+	EJC
+void contar_cartas(tablero_t* tablero, uint32_t* cant_rojas, uint32_t* cant_azules);
+
+recorrer tablero 
+	si puntero es null, pasar a siguiente cuadro
+	- si no es null, 
+	acceder a jugador dueño de la carta 
+	- si es 1, incrementar conteo rojo
+	- si es 2, incrementar conteo azul
+	- si no , seguir al siguiente cuadro 
+	
+	
+	
+
+

@@ -141,25 +141,21 @@ product_2_f:
  ;prologo
  push rbp
  mov rbp, rsp
-
- ;convierto x1 a float
- CVTPI2PS XMM1, esi    ; la instruccion solo toma reg64 bits, pero si uso esos puede que esten 
-                      ; sucios, y resetear todo el reg rsi a cero hace que pierda el valor x1
-                      ; que hagoooo
- ;multiplico floats
- mulss XMM0, XMM1
-                  ;fmul XMM0, XMM1 -> instruccion no válida
+; convierto f1 a double
+  CVTSS2SD xmm0, xmm0
+ ;convierto x1 a double
+  CVTSI2SD XMM1, esi ; la instruccion solo toma reg64 bits, pero si uso esos puede que esten 
+                     ; sucios, y resetear todo el reg rsi a cero hace que pierda el valor x1
+                      ;que hagoooo NADDAAA, ERA OTRA INSTRC
+; multiplico doubles
+  MULSD XMM0, XMM1
+                 ; fmul XMM0, XMM1 -> instruccion no válida
  ;convierto resultado a int truncando
- VCVTTSS2USI esi, XMM0
+ CVTTSD2SI esi, XMM0
  ;paso a memoria
- mov [edi], esi
+ mov [rdi], esi ; los cosos de memoria deben ser de 64 bits
 
-;  CVTDQ2PD esi, esi
-;  mulpd  esi, edx 
-;  CVTTSD2SI esi, esi 
-;  mov [edi], esi 
-
- ;epilogo
+;  epilogo
  pop rbp
  ret
 
@@ -194,8 +190,10 @@ product_9_f:
   CVTSS2SD XMM5, XMM5
   CVTSS2SD XMM6, XMM6
   CVTSS2SD XMM7, XMM7
-  push XMM7 ; ->> bp + 8 ? 
-  CVTSS2SD XMM7, [rbp + 48]  ;--> f9[XMM7]
+  CVTSS2SD XMM8, [rbp + 48]
+
+  ; push XMM7 ; ->> bp + 8 ? 
+  ; CVTSS2SD XMM7, [rbp + 48]  ;--> f9[XMM7]
 
 	;multiplicamos los doubles en xmm0 <- xmm0 * xmm1, xmmo * xmm2 , ...
   MULSD XMM0, XMM1
@@ -204,32 +202,40 @@ product_9_f:
   MULSD XMM0, XMM4
   MULSD XMM0, XMM5
   MULSD XMM0, XMM6
-  MULSD XMM0, XMM7 ;-> resultado por f9
-  pop XMM7 
-  MULSD XMM0, XMM7 ; -> resultado por f8
+  MULSD XMM0, XMM7 ;-> resultado por f8
+  MULSD XMM0, XMM8 ; -> resultado por f9
 
-	; convertimos los enteros en doubles y los multiplicamos por xmm0.
-	CVTPI2PD XMM1, esi 
-  MULSD XMM0, XMM1
-  CVTSI2SD XMM1, edx
-  MULSD XMM0, XMM1
-  CVTSI2SD XMM1, ecx 
-  MULSD XMM0, XMM1
-  CVTSI2SD XMM1, r8d
-  MULSD XMM0, XMM1
-  CVTSI2SD XMM1, r9d 
-  MULSD XMM0, XMM1
+	; convertimos los enteros en doubles y los multiplicamos por xmm0. VCVTUSI2SD CVTSI2SD
+	CVTSI2SD XMM9, esi  
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, edx
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, ecx ;por que dice que anda mal si 
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, r8d
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, r9d 
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, [rbp + 16]
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, [rbp + 24]
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, [rbp + 32]
+  MULSD XMM0, XMM9
+  CVTSI2SD XMM9, [rbp + 40]
+  MULSD XMM0, XMM9
 
-  mov XMM1, [rbp + 16]
-  MULSD XMM0, XMM1
-  mov XMM1, [rbp + 24]
-  MULSD XMM0, XMM1
-  mov XMM1, [rbp + 32]
-  MULSD XMM0, XMM1
-  mov XMM1, [rbp + 40]
-  MULSD XMM0, XMM1
 
-  mov [rdi], XMM0
+  ; mov XMM1, [rbp + 16]
+  ; MULSD XMM0, XMM1
+  ; mov XMM1, [rbp + 24]
+  ; MULSD XMM0, XMM1
+  ; mov XMM1, [rbp + 32]
+  ; MULSD XMM0, XMM1
+  ; mov XMM1, [rbp + 40]
+  ; MULSD XMM0, XMM1
+
+  movsd [rdi], XMM0
 
 	; epilogo
 	pop rbp

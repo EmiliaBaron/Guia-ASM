@@ -1,0 +1,57 @@
+typedef struct {
+	directory_t __dir;         	// 8 => 0 
+	uint16_t __dir_entries;		// 2 => 8
+	void* __archetype; //Es NULL	// 8 => 16
+	bool face_up;			// 1 => 24
+} fantastruco_t;			// 32
+
+typedef (directory_entry_t*)* directory_t; //pista: atención a esta definición
+
+typedef struct {
+	char ability_name[10]; // 10 => 0
+	void* ability_ptr;	// 8 => 16
+} directory_entry_t;		// 24
+
+
+void init_fantastruco_dir(fantastruco_t* card)
+agarrar el puntero y ver los directory entries
+crear malloc de tamano*8 
+añadir el puntero al struct
+
+llamar a directory entry pra crear las habilidades sleep y wake, pasando nombre en rdi y puntero a la funcion a c en rsi
+añadir el puntero al array de punteros
+
+
+mov r12, rdi ; fantastruco
+
+fantastruco_t* summon_fantastruco()
+
+llamar a malloc para crear un puntero fantastruco
+llamar a la funcion anterior 
+
+cambiar arquetipo y boca arriba
+
+EJ 4B 
+
+typedef struct {
+	directory_t __dir;
+	uint16_t __dir_entries;
+	fantastruco_t* __archetype; //Apunta a una instancia asociada de tipo fantastruco_t (el arquetipo)
+	uint32_t materials; //Usados por la habilidad destroy
+} alucard_t;
+
+void invocar_habilidad(void* generic_card, char* ability_name);
+
+- se accede al directorio y se recorre
+	- acceder a cada directory_entry_t, comparando strings 
+	- comparar strings
+	- si no es,seguir al sig
+	- si es, cortar la busqueda y llamar al puntero
+	
+- de no estar en el directorio 
+	- se acceder al arquetipo
+		-si arquetipo != null 
+		 - se busca en su directorio, misma manera que antes
+	-de no encontrarlo, se busca en el arquetipo del arquetipo, y así 
+
+

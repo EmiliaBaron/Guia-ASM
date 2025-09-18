@@ -1,0 +1,35 @@
+b invocar_habilidad
+
+b ej4b.asm:
+
+>>> p *(fantastruco_t *) $rdi
+$1 = {
+  __dir = 0x4062e0,
+  __dir_entries = 2,
+  __archetype = 0x0,
+  face_up = false
+}
+
+>>> p *(directory_entry_t*) $r14
+$1 = {
+  ability_name = "\240b@\000\000\000\000\000\300b",
+  ability_ptr = 0x0
+}
+
+>>> p (*(char *) $rbx)@5
+$10 = "hola"
+
+>>> p *(directory_entry_t*) $rdi
+$4 = {
+  ability_name = "\340b@\000\000\000\000\000\002",
+  ability_ptr = 0x0
+}
+>>> p *(char*) $rdi
+$5 = -32 '\340'
+>>> 
+
+
+
+
+
+

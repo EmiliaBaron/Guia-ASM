@@ -1,0 +1,46 @@
+calcular_estadisticas
+
+Si id = 0 
+	recorrer lista de casos
+	acceder a cat caso
+		acceder a funcion strcmp
+		si es CLt, inc y salir
+		si no es , seguir con el resto
+	acceder a estado caso
+		si es cero, inc memoria,
+		etc 
+si id !=0 
+	recorrer casos
+	acceder a usuario del caso
+	acceder a id del usuario
+	cmp id
+	si 
+	
+recorrer casos
+	si id != 0 acceder a usuario 
+	y acceder a caso
+	si son iguales contabilizar el caso
+	
+	si id =0 contabilizar el caso
+	
+typedef struct {
+	char[3] categoria; 		// 3 => 0
+	uint16_t estado;		// 2 => 4
+	usuario_t* usuario;		// 8 => 8
+} caso_t;	
+
+typedef struct {
+	uint32_t id; 	// 4 => 0
+	uint32_t nivel; // 4 => 4
+} usuario_t;		// 8
+
+typedef struct {
+	uint8_t cantidad_CLT; 		// 1 => 0
+	uint8_t cantidad_RBO;		// 1 => 1
+	uint8_t cantidad_KSC;		// 1 => 2
+	uint8_t cantidad_KDT;		// 1 => 3
+	uint8_t cantidad_estado_0;	// 1 => 4
+	uint8_t cantidad_estado_1;	// 1 => 5
+	uint8_t cantidad_estado_2;	// 1 => 6
+} estadisticas_t; // 6
+

@@ -1,0 +1,54 @@
+b resolver_automaticamente
+
+b ej3b.asm:
+
+>>> p $r15
+$1 = 2
+
+
+>>> p *(caso_t*) ($r13 + $rbx)
+$4 = {
+  categoria = "A1",
+  estado = 1,
+  usuario = 0x4086b0
+}
+>>> p (usuario_t*) $r8
+$6 = (usuario_t *) 0x4086b0
+
+>>> p *(usuario_t *) 0x4086b0
+$10 = {
+  id = 1,
+  nivel = 0
+}
+SEGUNDO TEST
+
+>>> p *(caso_t*) ($r13 + $rbx)
+$3 = {
+  categoria = "C3",
+  estado = 3,
+  usuario = 0x408710
+}
+
+rax = 1 (fun)
+
+TERCER test
+
+>>> p *(caso_t*) $r13 
+$1 = {
+  categoria = "CLT",
+  estado = 2,
+  usuario = 0x408750
+}
+
+>>> p $rax
+$2 = 0
+
+CUARTO TEST
+
+>>> p *(caso_t*) ($r13 + $rbx)
+$2 = {
+  categoria = "ABC",
+  estado = 2,
+  usuario = 0x408770
+}
+

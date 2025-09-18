@@ -18,43 +18,49 @@ global strLen
 ; a[rdi] 
 ; b[rsi]
 strCmp:
-	xor xor r8, r8 
+	;prologo
+	push rbp
+	mov rbp, rsp
 
-	.ciclo 
-		mov al BYTE [rdi + r8]
-		mov bl BYTE [rdi + r8]
+	xor r8, r8 
 
-		mov cl '\0'
+	.ciclo: 
+		mov al, BYTE [rdi + r8]
+		mov cl, BYTE [rsi + r8]
 
-		cmp al cl 
+		mov dl, 0
+
+		;chequear que a no sea null
+		cmp al, dl 
 		je .chequearBnulo
 		
 		;comparar a con b
-		cmp al bl 
-		ja .devolver-1
-		jb .devolver1
+		cmp al, cl 
+		ja .devolverMenosUno
+		jb .devolverUno
 		;si son iguales
 		inc r8 
 		jmp .ciclo
 
-		.chequearBnulo
-			cmp bl cl 
-			je .devolver0
-			ja .devolver1
+		.chequearBnulo:
+			cmp cl, dl 
+			je .devolverCero
+			ja .devolverUno
 
-		.devolver0
+		.devolverCero:
 			mov eax, 0
 			jmp .epilogo
 
-		.devolver1
+		.devolverUno:
 		  	mov eax, 1
 		  	jmp .epilogo
 
-		.devolver-1
+		.devolverMenosUno:
 			mov eax, -1
 			jmp .epilogo
 
-	.epilogo
+	.epilogo:
+	pop rbp
 	ret
 
 ; char* strClone(char* a)
@@ -62,19 +68,22 @@ strCmp:
 strClone:
 	push rbp 
 	mov rbp, rsp
+	push rbx
+	sub rsp, 8 
 
 	xor r8, r8 ;indice/tamaño string
-	.calcTamanioA
-		mov al BYTE [rdi + r8]
-		mov cl '\0'
-		cmp al cl 
+	.calcTamanioA:
+		;NO MODIFICAR BL porque es NO VOLATIL AL PPORQUE ES PARTE DEL RAX
+		mov bl, BYTE [rdi + r8]
+		mov cl, 0
 		inc r8
+		cmp bl, cl 
 		jne .calcTamanioA
 
 	push r8 
 	push rdi ; pila alineada
 
-	mov rdi r8 ; asumo que cuando pusheas no limpias el valor de r8 
+	mov rdi, r8 ; asumo que cuando pusheas no limpias el valor de r8 
 
 	call malloc ; con rdi = tamaño string de a
 
@@ -83,28 +92,85 @@ strClone:
 
 	xor r10, r10 
 	
-	.copiarString
-		mov al, BYTE [rdi + r10]
-		mov BYTE [rax + r10], al
+	.copiarString:
+		mov bl, BYTE [rdi + r10]
+		mov BYTE [rax + r10], bl
 		inc r10 
-		cmp r10 r8 
+		cmp r10, r8 
 		jne .copiarString
 
+	add rsp, 8
+	pop rbx
 	pop rbp
 	ret 
 
 ; void strDelete(char* a)
 strDelete:
-	
+	;prologo
+	push rbp 
+	mov rbp, rsp
 
+	call free 
+
+	pop rbp
 	ret
 
 ; void strPrint(char* a, FILE* pFile)
+;x1[rdi]
+;pfile[rsi]
 strPrint:
+	;prologo
+	push rbp
+	mov rbp, rsp
+
+	mov al, BYTE [rdi]
+	mov cl, 0
+	cmp al, cl
+	je .printNull
+
+	;si no es null
+	mov r10, rdi
+	mov rdi, rsi 
+	mov rsi, r10 ;intercambiar char* por FILE*
+	call fprintf
+	jmp .epilogo
+
+	.printNull:
+		mov rdi, rsi
+		mov rsi, 'NULL'
+		call fprintf 
+
+	.epilogo:
+	pop rbp
 	ret
 
 ; uint32_t strLen(char* a)
 strLen:
+	;prologo
+	push rbp
+	mov rbp, rsp
+	push rbx
+
+	xor rax, rax ;indice/tamaño string
+	mov cl, 0
+
+	calcTamanio:
+		;NO MODIFICAR AL PPORQUE ES PARTE DEL RAX
+		mov bl, BYTE [rdi + rax]
+		cmp bl, cl 
+		je .caracNulo
+		inc eax
+		jmp calcTamanio
+
+	.caracNulo:
+
+	pop rbx
+	pop rbp
 	ret
+
+; Displacement — An 8-bit, 16-bit, or 32-bit value.
+; Base — The value in a 64-bit general-purpose register.
+; Index — The value in a 64-bit general-purpose register.
+; Scale factor — A value of 2, 4, or 8 that is multiplied by the index value.
 
 

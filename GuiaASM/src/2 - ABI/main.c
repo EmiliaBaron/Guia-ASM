@@ -15,6 +15,4 @@ int main()
 	assert(alternate_sum_4_using_c_alternative(8, 2, 5, 1) == 10);
 
 	assert(alternate_sum_8(8, 2, 5, 1, 8, 2, 5, 1) == 20);
-
-	return 0;
 }
